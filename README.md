@@ -6,11 +6,11 @@ This is an attempt to create a wrapper around the winRing0 driver. It is mostly 
 
 ### `win-kernel-driver`
 
-[`win-kernel-driver`] is a utility crate to install and communicate with windows device drivers. It is based on the KernelDriver class from OpenhardwareMonitor. For more information see the [KernelDriver class](https://github.com/openhardwaremonitor/openhardwaremonitor/blob/master/Hardware/KernelDriver.cs).
+[`win-kernel-driver`](https://alex-dow.github.io/winRing0-rs/doc/win_kernel_driver/index.html) is a utility crate to install and communicate with windows device drivers. It is based on the KernelDriver class from OpenhardwareMonitor. For more information see the [KernelDriver class](https://github.com/openhardwaremonitor/openhardwaremonitor/blob/master/Hardware/KernelDriver.cs).
 
 ### `win_ring0`
 
-[`win_ring0`] is a wrapper around the winRing0 driver itself. It is under development and does not support every feature for now.
+[`win_ring0`](https://alex-dow.github.io/winRing0-rs/doc/win_ring0/index.html) is a wrapper around the winRing0 driver itself. It is under development and does not support every feature for now.
 
 ## Usage
 
