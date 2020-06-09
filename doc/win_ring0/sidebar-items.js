@@ -1,0 +1,1 @@
+initSidebarItems({"constant":[["DEVICE_TYPE","The device type is defined by the winRing0 driver. For more information see https://github.com/openhardwaremonitor/openhardwaremonitor/blob/master/External/WinRing0/OlsIoctl.h ."]],"enum":[["IOCTL",""]],"struct":[["WinRing0","WinRing0 driver"]]});

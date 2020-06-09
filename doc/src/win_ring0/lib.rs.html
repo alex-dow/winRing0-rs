@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `win_ring0\src\lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css"><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../win_ring0/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+</pre><div class="example-wrap"><pre class="rust ">
+<span class="doccomment">//! `win_ring0` is a crate for using the winRing0 windows driver.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! The winRing0 was developed by OpenLibSys but is forked and maintained OpenHardwareMonitor.</span>
+<span class="doccomment">//! It&#39;s used to access low level information from your hardware, such as CPU load, fan speeds,</span>
+<span class="doccomment">//! temperature sensors, and more.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! It is not an asbtraction an layer. You will need to know the specifics of your hardware</span>
+<span class="doccomment">//! and its architecture in order to gather information from it.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! For more information visit https://github.com/openhardwaremonitor/openhardwaremonitor.</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! # Example</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//! use win_ring0::WinRing0;</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//! pub fn main() {</span>
+<span class="doccomment">//!     let mut r0: Box&lt;WinRing0&gt; = Box::from(WinRing0::new());</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//!     println!(&quot;Installing ring0 driver&quot;);</span>
+<span class="doccomment">//!     match r0.install() {</span>
+<span class="doccomment">//!         Ok(()) =&gt; { println!(&quot;Driver installed&quot;); }</span>
+<span class="doccomment">//!         Err(err) =&gt; { println!(&quot;Error: {}&quot;, err); }</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//!     println!(&quot;Opening ring0 driver&quot;);</span>
+<span class="doccomment">//!     match r0.open() {</span>
+<span class="doccomment">//!         Ok(()) =&gt; { println!(&quot;Driver opened&quot;); }</span>
+<span class="doccomment">//!         Err(err) =&gt; { println!(&quot;Error: {}&quot;, err); }</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//!     println!(&quot;Trying to get tjMax value, should work on most Intel CPUs&quot;);</span>
+<span class="doccomment">//!     // MSR_TEMPERATURE_TARGET</span>
+<span class="doccomment">//!     let msr = 0x1a2;</span>
+<span class="doccomment">//!     let out = r0.readMsr(msr).unwrap();</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//!     let _edx = ((out &gt;&gt; 32) &amp; 0xffffffff) as u32;</span>
+<span class="doccomment">//!     let eax = (out &amp; 0xffffffff) as u32;</span>
+<span class="doccomment">//!     let tj_max = (eax &gt;&gt; 16) &amp; 0xff;</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//!     println!(&quot;MSR Value: {}&quot;, tj_max);</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//!     println!(&quot;Closing ring0 driver&quot;);</span>
+<span class="doccomment">//!     match r0.close() {</span>
+<span class="doccomment">//!         Ok(()) =&gt; { println!(&quot;Driver closed&quot;); }</span>
+<span class="doccomment">//!         Err(err) =&gt; { println!(&quot;Error: {}&quot;, err); }</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//! </span>
+<span class="doccomment">//!     println!(&quot;Uninstall ring0 driver&quot;);</span>
+<span class="doccomment">//!     match r0.uninstall() {</span>
+<span class="doccomment">//!         Ok(()) =&gt; { println!(&quot;Driver uninstalled&quot;); }</span>
+<span class="doccomment">//!         Err(err) =&gt; { println!(&quot;Error: {}&quot;, err); }</span>
+<span class="doccomment">//!     }    </span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//! ```</span>
+<span class="kw">mod</span> <span class="ident">ioctl</span>;
+
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
+<span class="kw">mod</span> <span class="ident">winRing0</span>;
+
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ioctl</span>::<span class="ident">IOCTL</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">winRing0</span>::<span class="ident">WinRing0</span>;
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">ioctl</span>::<span class="ident">DEVICE_TYPE</span>;
+</pre></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "win_ring0";</script><script src="../../aliases.js"></script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>

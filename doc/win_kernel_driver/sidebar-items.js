@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Access","IO Access"],["Method","IO Method"]],"fn":[["io_control_code","Creates an IOCTL code"]],"struct":[["DriverBuilder","Use this to build a kernel driver object you can interact with"],["WinKernelDriver","A handle to a windows kernel driver."]]});

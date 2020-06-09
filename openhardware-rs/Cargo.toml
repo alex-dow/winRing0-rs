@@ -1,0 +1,18 @@
+[package]
+name = "openhardware-rs"
+version = "0.0.1"
+authors = ["Alex Dow <adow@psikon.com>"]
+edition = "2018"
+include = ["WinRing0.sys", "WinRing0x64.sys"]
+
+[dependencies]
+winRing0 = { path = "../win_ring0" }
+winapi = { version="0.3.8", features = ["fileapi", "ioapiset", "winnt", "handleapi", "errhandlingapi", "std", "winbase"] }
+windows-service = "0.2.0"
+err-derive = {version="=0.1.5"}
+x86 = "0.33.0"
+core_affinity = "0.5.9"
+raw-cpuid = "8.0.0"
+
+[lib]
+name = "openhardware"
